@@ -9,11 +9,10 @@ const Home = () => {
 
   return (
     <section className="h-screen w-screen space-y-5">
-     <Button onClick={onOpen} colorSchema="blue" title="open" />
-     <Button onClick={onClose} colorSchema="red" title="closed" />
+    <h1>Siap LOomba LKS</h1>
 
 
-     {isOpen ? <p>Open</p> : <p>Close</p>}
+    
       
     </section>
   );

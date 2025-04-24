@@ -1,24 +1,21 @@
-
-
 import axios, { AxiosInstance } from "axios";
 import { useSession, signOut } from "next-auth/react";
 import { useEffect } from "react";
+import Cookies from "js-cookie";
 
 export const axiosClient: AxiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   headers: { "Content-Type": "application/json" },
 });
 
-const useAxiosAuth = () => {
-  const { data: session } = useSession();
 
+
+const useAxiosAuth = () => {
   useEffect(() => {
     const requestIntercept = axiosClient.interceptors.request.use(
       (config: any) => {
-        config.headers[
-          "Authorization"
-        ] = `Bearer ${session?.user?.accessToken}`;
-
+        const token = Cookies.get("token-app");
+        config.headers["Authorization"] = `Bearer ${token}`;
         return config;
       },
       (error: any) => Promise.reject(error)
@@ -27,9 +24,15 @@ const useAxiosAuth = () => {
     const responseIntercept = axiosClient.interceptors.response.use(
       async (response: any) => response,
       async (error: any) => {
+        if (401 === error?.response?.status) {
+          localStorage.clear();
+          window.location.replace("/auth/login");
+        } else {
+          return Promise.reject(error);
+        }
         alert("autho");
-        signOut();
-        window.location.replace("/auth/login");
+        // signOut();
+        // window.location.replace("/auth/login");
       }
     );
 
@@ -37,16 +40,12 @@ const useAxiosAuth = () => {
       axiosClient.interceptors.request.eject(requestIntercept);
       axiosClient.interceptors.response.eject(responseIntercept);
     };
-  }, [session]);
+  }, []);
 
   return axiosClient;
 };
 
 export default useAxiosAuth;
-
-
-
-
 
 export interface BaseResponseSuccess {
   status: string;
@@ -70,3 +69,4 @@ export interface BasePayloadPagination {
   page: number;
   pageSize: number;
 }
+

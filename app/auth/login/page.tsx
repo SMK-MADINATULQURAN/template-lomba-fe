@@ -1,102 +1,47 @@
-"use client";
-
-import { useFormik, Form, FormikProvider, getIn } from "formik";
-
+"use client"
+import { useFormik, FormikProvider } from "formik";
 import * as yup from "yup";
-import { LoginPayload } from "../interface";
-import InputText from "@/components/InputText";
-import Label from "@/components/Label";
-import Button from "@/components/Button";
-import useAuthModule from "../lib";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
-import { useEffect } from "react";
 
-
-export const registerSchema = yup.object().shape({
-  email: yup
-    .string()
-    .nullable()
-    .default("")
-    .email("Gunakan format email")
-    .required("Wajib isi"),
-  password: yup
-    .string()
-    .nullable()
-    .default("")
-    .required("Wajib isi")
-    .min(8, "Minimal 8 karakater"),
+export const loginValiasi = yup.object().shape({
+  name: yup.string().nullable().required("wajib"),
 });
 
-const Login = () => {
-  const router = useRouter();
-  const { data: session, status } = useSession();
-  console.log('session', session)
-  console.log('status', status)
-
-  const formik = useFormik<LoginPayload>({
-    initialValues: registerSchema.getDefault(),
-    validationSchema: registerSchema,
+function Login() {
+  const formik = useFormik({
+    initialValues: { name: "", alamat: "" },
     enableReinitialize: true,
-    onSubmit: (payload) => {
-     
+    validationSchema: loginValiasi,
+    onSubmit: () => {
+      console.log("ok");
     },
   });
 
- 
-  const { handleChange, handleSubmit, handleBlur, values, errors } = formik;
+  console.log("formik", formik.values);
+  console.log("err", formik.errors)
 
   return (
-    <section>
-      <div className="flex items-center justify-center w-full">
-        <h1 className="text-3xl text-blue-400">Login</h1>
-      </div>
+    <>
       <FormikProvider value={formik}>
-        <Form className="space-y-5" onSubmit={handleSubmit}>
-          <section>
-            <Label htmlFor="email" title="Email" />
-            <InputText
-              value={values.email}
-              placeholder="exampel@email.com"
-              id="email"
-              name="email"
-              onChange={handleChange}
-              onBlur={handleBlur}
-              isError={getIn(errors, "email")}
-              messageError={getIn(errors, "email")}
-            />
-          </section>
-          <section>
-            <Label htmlFor="password" title="Password" />
+        <form onSubmit={formik.handleSubmit}>
+          <input
+          
+          name="name"
+          onBlur={formik.handleBlur}
+          className="border"
+          placeholder="isi"
+            value={formik.values.name}
+            onChange={(e: any) => {
+              formik.setFieldValue("name", e.target.value);
+              formik.setFieldValue("alamat", e.target.value);
+            }}
+          />
 
-            <InputText
-              value={values.password}
-              placeholder="**********"
-              id="password"
-              name="password"
-              type="password"
-              onChange={handleChange}
-              onBlur={handleBlur}
-              isError={getIn(errors, "password")}
-              messageError={getIn(errors, "password")}
-            />
-          </section>
-          <section>
-            <Button
-              height="lg"
-              title="Login"
-              colorSchema="blue"
-             
-            />
-            <Link href={"register"}>
-              <Button title="Halaman Register" colorSchema="green" />
-            </Link>
-          </section>
-        </Form>
+
+         <p> {formik.errors.name}</p>
+        </form>
       </FormikProvider>
-    </section>
+    </>
   );
-};
+}
 
 export default Login;

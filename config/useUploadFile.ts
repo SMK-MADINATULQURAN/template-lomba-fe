@@ -15,6 +15,7 @@ const useUploadFile = () => {
     const form = new FormData();
     form.append("file", file);
     
+    
 
     return axiosAuthClient
       .post("/upload/file", form, {

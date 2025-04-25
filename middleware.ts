@@ -1,22 +1,20 @@
-import { withAuth } from "next-auth/middleware";
+import { NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+import { jwtDecode } from "jwt-decode";
+ 
+// This function can be marked `async` if using `await` inside
+export function middleware(request: NextRequest) {
+  //  NextResponse.rewrite(new URL('/home', request.url))
 
-export default withAuth(
-  // `withAuth` augments your `Request` with the user's token.
-  function middleware(req) {
-    console.log("token", req.nextauth.token);
-  },
-  {
-    callbacks: {
-      authorized: ({ token }) => {
-        if (token) return true;
-        return false;
-      },
-    },
-    pages: {
-      signIn: "/auth/login",
-      error: '/api/auth/error',
-    },
-  }
-);
-
-export const config = { matcher: ["/admin", "/admin/:path*"] };
+  let token = request.cookies.get("token-app")
+  console.log("cookie", token?.value)
+  // const decoded:any = jwtDecode(token?.value as string);
+  // console.log("deckide", decoded)
+  // console.log("token", decoded.name)
+  NextResponse.next()
+}
+ 
+// See "Matching Paths" below to learn more
+// export const config = {
+//   matcher: '/about/:path*',
+// }

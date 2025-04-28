@@ -7,7 +7,7 @@ export function middleware(request: NextRequest) {
   //  NextResponse.rewrite(new URL('/home', request.url))
 
   let token = request.cookies.get("token-app")
-  console.log("cookie", token?.value)
+ 
   // const decoded:any = jwtDecode(token?.value as string);
   // console.log("deckide", decoded)
   // console.log("token", decoded.name)
